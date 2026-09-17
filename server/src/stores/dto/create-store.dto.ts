@@ -2,7 +2,7 @@ import { IsEmail, IsOptional, IsString, IsUUID, Length, MaxLength } from 'class-
 
 export class CreateStoreDto {
   @IsString()
-  @Length(3, 120)
+  @Length(20, 60)
   name!: string;
 
   @IsEmail()

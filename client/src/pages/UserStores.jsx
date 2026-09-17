@@ -59,7 +59,7 @@ export default function UserStores() {
       <div className="panel">
         <div className="table-wrap">
           <table>
-            <thead><tr><th><button className="sort-button" onClick={() => toggleSort('name')}>Store {sortBy === 'name' ? (sortOrder === 'asc' ? '↑' : '↓') : '↕'}</button></th><th>Address</th><th>Overall rating</th><th>Your rating</th><th>Action</th></tr></thead>
+            <thead><tr><th><button className="sort-button" onClick={() => toggleSort('name')}>Store {sortBy === 'name' ? (sortOrder === 'asc' ? '↑' : '↓') : '↕'}</button></th><th><button className="sort-button" onClick={() => toggleSort('address')}>Address {sortBy === 'address' ? (sortOrder === 'asc' ? '↑' : '↓') : '↕'}</button></th><th>Overall rating</th><th>Your rating</th><th>Action</th></tr></thead>
             <tbody>
               {loading ? <tr><td colSpan="5" className="loading">Loading stores…</td></tr> : stores.length === 0 ? <tr><td colSpan="5" className="empty">No stores matched the current search.</td></tr> : stores.map(store => (
                 <tr key={store.id}>

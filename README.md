@@ -28,7 +28,7 @@ A role-based store rating web application built for the assessment brief. The pr
 
 - Sign up and log in through the same login screen as every other role
 - Search stores by name/address
-- Sort store listings
+- Sort store listings by store name or address
 - See the overall rating and their own submitted rating
 - Submit a rating from 1–5
 - Change an existing rating
@@ -49,10 +49,13 @@ A role-based store rating web application built for the assessment brief. The pr
 | Field | Rule |
 | --- | --- |
 | User name | 20–60 characters |
+| Store name | 20–60 characters |
 | Address | Maximum 400 characters |
-| Password | 8–16 characters, at least one uppercase character and one special character |
+| Password | 8–16 characters, at least one uppercase character and one non-whitespace special character |
 | Email | Standard email format |
 | Rating | Integer from 1 to 5 |
+
+Validation is enforced on the backend with class-validator and reinforced by the React forms for a better user experience.
 
 ## Architecture
 
@@ -108,7 +111,7 @@ erDiagram
   }
 ```
 
-A rating has a composite unique key on `(userId, storeId)`. That is the database-level rule that guarantees one submitted rating per user/store pair while still allowing the user to update it later.
+A rating has a composite unique key on `(userId, storeId)`. That is the database-level rule that guarantees one submitted rating per user/store pair while still allowing the user to update it later. A unique store `ownerId` also enforces one owned store per store-owner account.
 
 ## Request flow
 
@@ -148,6 +151,7 @@ store-rating-platform/
 │   └── package.json
 ├── server/                 # NestJS application
 │   ├── prisma/
+│   │   ├── migrations/
 │   │   ├── schema.prisma
 │   │   └── seed.ts
 │   ├── src/
@@ -158,6 +162,7 @@ store-rating-platform/
 │   │   ├── users/
 │   │   └── main.ts
 │   ├── test/
+│   ├── eslint.config.mjs
 │   └── package.json
 ├── docker-compose.yml
 ├── .env.example
@@ -187,10 +192,12 @@ cd server
 cp .env.example .env
 npm install
 npx prisma generate
-npx prisma migrate dev --name init
+npx prisma migrate deploy
 npm run prisma:seed
 npm run start:dev
 ```
+
+The committed migration creates the complete PostgreSQL schema reproducibly. Use `npm run prisma:migrate` during development when you intentionally change the Prisma schema.
 
 The API runs on `http://localhost:3000`.
 
@@ -206,6 +213,15 @@ npm run dev
 
 The web app runs on the Vite URL shown in the terminal, normally `http://localhost:5173`.
 
+### 5. Backend quality checks
+
+```bash
+cd server
+npm run lint
+npm run build
+npm test -- --runInBand
+```
+
 ## Demo accounts
 
 The seed script creates usable accounts so the role-based flows can be checked immediately.
@@ -216,7 +232,7 @@ The seed script creates usable accounts so the role-based flows can be checked i
 | Normal User | user@ratinghub.local | `User@123` |
 | Store Owner | owner@ratinghub.local | `Owner@123` |
 
-The seeded user names intentionally satisfy the 20-character minimum from the brief.
+The seeded names and store names satisfy the assessment validation limits.
 
 ## REST API
 
@@ -244,8 +260,8 @@ The seeded user names intentionally satisfy the 20-character minimum from the br
 
 | Method | Route | Access | Purpose |
 | --- | --- | --- | --- |
-| GET | `/stores` | Authenticated | Store search/listing |
-| POST | `/ratings/:storeId` | Normal user | Submit rating |
+| GET | `/stores` | Normal user | Store search/listing |
+| POST | `/ratings/:storeId` | Normal user | Submit or upsert rating |
 | PATCH | `/ratings/:storeId` | Normal user | Update rating |
 | GET | `/owner/dashboard` | Store owner | Own store + submitted ratings |
 
@@ -257,4 +273,4 @@ The list endpoints accept query parameters such as:
 ?name=mart&address=pune&role=USER&sortBy=name&sortOrder=asc&page=1&pageSize=10
 ```
 
-The server validates sort fields against an allow-list rather than passing arbitrary column names into a query. Text filtering uses PostgreSQL case-insensitive matching through Prisma.
+Supported sort fields are mapped to Prisma `orderBy` objects; the application does not construct raw SQL from query parameters. Text filtering uses PostgreSQL case-insensitive matching through Prisma.

@@ -1,6 +1,6 @@
-import { IsEmail, IsString, Length, MaxLength, Matches } from 'class-validator';
+import { IsEmail, IsString, Length, Matches, MaxLength } from 'class-validator';
 
-export const PASSWORD_PATTERN = /^(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,16}$/;
+export const PASSWORD_PATTERN = /^(?=.*[A-Z])(?=.*[^A-Za-z0-9\s]).{8,16}$/;
 
 export class SignupDto {
   @IsString()
