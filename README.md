@@ -523,15 +523,24 @@ The production Render build performs, in order:
 
 ---
 
-## 15. Demo accounts
+## 15. Demo login credentials
 
-The current seed data includes these accounts:
+Use the **same login page** on the live frontend for all three roles:
 
-| Role | Email | Password |
+**Live frontend:** https://store-rating-platform-web.onrender.com
+
+| Role | Login email | Password |
 | --- | --- | --- |
 | System Administrator | `admin@ratinghub.local` | `Admin@123` |
 | Normal User | `user@ratinghub.local` | `User@123` |
 | Store Owner | `owner@ratinghub.local` | `Owner@123` |
+
+### How to test each role
+
+1. Open the [live frontend](https://store-rating-platform-web.onrender.com).
+2. Log in with one of the credentials above.
+3. Use **Logout** before testing another role.
+4. The application automatically shows the dashboard and permissions for the authenticated role.
 
 The seeded accounts are intended for **assessment/demo use**. A real production deployment should replace or remove shared demo credentials.
 
