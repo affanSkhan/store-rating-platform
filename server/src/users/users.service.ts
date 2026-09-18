@@ -38,11 +38,17 @@ export class UsersService {
   }) {
     const page = Math.max(1, query.page ?? 1);
     const pageSize = Math.min(50, Math.max(1, query.pageSize ?? 10));
+
+    // The admin UI sends an empty string when no role filter is selected.
+    // Treat that the same as an omitted filter instead of passing an invalid
+    // enum value to Prisma.
+    const role = query.role || undefined;
+
     const where: Prisma.UserWhereInput = {
       ...(query.name ? { name: { contains: query.name, mode: 'insensitive' } } : {}),
       ...(query.email ? { email: { contains: query.email, mode: 'insensitive' } } : {}),
       ...(query.address ? { address: { contains: query.address, mode: 'insensitive' } } : {}),
-      role: query.role ?? { in: ['ADMIN', 'USER'] },
+      role: role ?? { in: ['ADMIN', 'USER'] },
     };
 
     const orderBy: Prisma.UserOrderByWithRelationInput = {
