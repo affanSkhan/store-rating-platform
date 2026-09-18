@@ -249,7 +249,7 @@ erDiagram
         varchar name
         varchar email
         varchar address
-        uuid ownerId FK_UK
+        uuid ownerId FK
         datetime createdAt
         datetime updatedAt
     }
